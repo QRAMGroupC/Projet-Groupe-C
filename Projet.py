@@ -169,9 +169,9 @@ if choice == "Introduction":
 @st.cache_data
 def load_data():
     sentiment_df = pd.read_csv(
-        'C:/Users/aurel/Documents/Master Finance Module 3/Quantitative Risk and Asset Management II/sentiment.csv')
+        'ressources/sentiment.csv')
     commodities_data_df = pd.read_csv(
-        'C:/Users/aurel/Documents/Master Finance Module 3/Quantitative Risk and Asset Management II/cleaned_commodities_data.csv')
+        'ressources/cleaned_commodities_data.csv')
 
     sentiment_df['Date'] = pd.to_datetime(sentiment_df['Date'].str.replace('.', '-', regex=False), errors='coerce')
     commodities_data_df['Date'] = pd.to_datetime(commodities_data_df['Date'], errors='coerce')
