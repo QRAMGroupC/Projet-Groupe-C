@@ -7,18 +7,33 @@ from data_management import get_sp500_data
 def display_comparison():
     st.title("Comparaison betweem Min Var and Black-litterman strategy")
     try:
-        annualized_returns_per_year = st.session_state["annualized_returns_per_year"]
+        annualized_returns_yearly = st.session_state["annualized_returns_yearly"]
         annualized_returns_df = st.session_state["annualized_returns_df"]
     except KeyError as e:
         st.success(
             "Make sure you have completed the 3 previous steps before analyzing the performance."
         )
 
+    if not (
+        st.session_state.get("mvs_no_rolling_risk_free_rate")
+        == st.session_state.get("mvs_rolling_risk_free_rate")
+        and st.session_state.get("mvs_no_rolling_risk_free_rate")
+        == st.session_state.get("bl_risk_free_rate")
+        and st.session_state.get("mvs_no_rolling_risk_aversion")
+        == st.session_state.get("mvs_rolling_risk_aversion")
+        and st.session_state.get("mvs_no_rolling_risk_aversion")
+        == st.session_state.get("bl_risk_aversion")
+    ):
+        st.warning(
+            "Please make sure to use the same risk free rate and risk aversion for all 3 strategies for fair comparison."
+        )
+        return
+
     # === Graph 1: Annualized Returns Comparison ===
     st.subheader("1. Comparison of the Annualized Portfolio Returns by Year")
 
     fig1, ax1 = plt.subplots(figsize=(12, 6))
-    annualized_returns_per_year.plot(
+    annualized_returns_yearly.plot(
         kind="bar", ax=ax1, color="green", alpha=0.7, label="Portfolio"
     )
     ax1.set_title("Annualized Returns by Year of Min Var")
@@ -42,7 +57,7 @@ def display_comparison():
     # Graph 2
     st.subheader("2.Min Var vs Black-litterman Cumulative Returns")
     cumulative_returns = st.session_state["cumulative_returns"]
-    cumulative_return = st.session_state["cumulative_return"]
+    cumulative_returns_yearly = st.session_state["cumulative_returns_yearly"]
     portfolio_with_risk_free_df = st.session_state["portfolio_with_risk_free_df"]
     sp500_data = get_sp500_data(
         portfolio_with_risk_free_df.index[0],
@@ -58,7 +73,7 @@ def display_comparison():
     )
     ax.plot(
         portfolio_with_risk_free_df.index,
-        cumulative_return,
+        cumulative_returns_yearly,
         label="Min Var portfolio",
         color="blue",
     )

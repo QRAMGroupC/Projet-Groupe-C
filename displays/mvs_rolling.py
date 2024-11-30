@@ -11,32 +11,23 @@ from data_management import get_sp500_data
 
 
 def display_rolling_window_performance():
-    current_results = st.session_state["current_results"]
-
     st.header("Performance Analysis with Rolling Window")
     st.info(
         "Analyze portfolio performance over time using a rolling window approach and compare it with the S&P 500."
     )
 
-    # Variables partagées
-    try:
-        st.session_state["final_combined_weights"]
-    except KeyError:
-        st.success(
+    if "final_combined_weights" not in st.session_state:
+        st.warning(
             "Make sure you have completed the previous steps named : Weights with only Min Var before analyzing the performance."
         )
+        return
 
-    if st.session_state["last_page"] != "mvs_rolling":
-        slider_risk_free_value = current_results.get_result(
-            "mvs_rolling_last_risk_free_rate", 0.04
-        )
-        slider_risk_aversion_value = current_results.get_result(
-            "mvs_rolling_last_risk_averson", 3.0
-        )
-        st.session_state["last_page"] = "mvs_rolling"
-    else:
-        slider_risk_free_value = 0.04
-        slider_risk_aversion_value = 3.0
+    slider_risk_free_value = st.session_state.get(
+        "mvs_rolling_risk_free_rate", 0.04
+    )
+    slider_risk_aversion_value = st.session_state.get(
+        "mvs_rolling_risk_aversion", 3.0
+    )
 
     risk_free_rate = st.slider(
         "Adjust Risk-Free Rate ",
@@ -52,15 +43,42 @@ def display_rolling_window_performance():
         slider_risk_aversion_value,
         1.0,
     )
-    st.session_state["risk_free_rate"] = risk_free_rate
-    st.session_state["risk_aversion"] = risk_aversion
 
-    with st.spinner("Computing rolling window performance..."):
-        (
-            portfolio_with_risk_free_df,
-            cumulative_return,
-            annualized_returns_per_year,
-        ) = compute_performance_with_rolling_window(risk_free_rate, risk_aversion)
+    if st.button("Confirm and Compute"):
+        # Update session state with slider values
+        st.session_state["mvs_rolling_risk_free_rate"] = risk_free_rate
+        st.session_state["mvs_rolling_risk_aversion"] = risk_aversion
+
+        with st.spinner("Computing rolling window performance..."):
+            # Perform computation
+            (
+                portfolio_with_risk_free_df,
+                cumulative_returns_yearly,
+                annualized_returns_yearly,
+            ) = compute_performance_with_rolling_window(risk_free_rate, risk_aversion)
+
+            # Store the results in session state
+            st.session_state["portfolio_with_risk_free_df"] = (
+                portfolio_with_risk_free_df
+            )
+            st.session_state["cumulative_returns_yearly"] = cumulative_returns_yearly
+            st.session_state["annualized_returns_yearly"] = annualized_returns_yearly
+
+        st.success("Computation completed!")
+
+    if (
+        "portfolio_with_risk_free_df" not in st.session_state
+        or "cumulative_returns_yearly" not in st.session_state
+        or "annualized_returns_yearly" not in st.session_state
+    ):
+        st.warning(
+            "Please confirm the slider values to compute the portfolio performance."
+        )
+        return
+
+    portfolio_with_risk_free_df = st.session_state["portfolio_with_risk_free_df"]
+    cumulative_returns_yearly = st.session_state["cumulative_returns_yearly"]
+    annualized_returns_yearly = st.session_state["annualized_returns_yearly"]
 
     sp500_data = get_sp500_data(
         portfolio_with_risk_free_df.index[0], portfolio_with_risk_free_df.index[-1]
@@ -71,7 +89,7 @@ def display_rolling_window_performance():
     fig3, ax3 = plt.subplots(figsize=(12, 6))
     ax3.plot(
         portfolio_with_risk_free_df.index,
-        cumulative_return,
+        cumulative_returns_yearly,
         label="Portfolio Cumulative Return",
         color="blue",
     )
@@ -206,7 +224,7 @@ def display_rolling_window_performance():
     # === Graph 2: Annualized Returns ===
     st.subheader("3. Annualized Portfolio Returns by Year")
     fig2, ax2 = plt.subplots(figsize=(12, 6))
-    annualized_returns_per_year.plot(
+    annualized_returns_yearly.plot(
         kind="bar", ax=ax2, color="green", alpha=0.7, label="Portfolio"
     )
     ax2.set_title("Annualized Returns by Year")
@@ -221,7 +239,7 @@ def display_rolling_window_performance():
     fig4, ax4 = plt.subplots(figsize=(12, 6))
     ax4.plot(
         portfolio_with_risk_free_df.index,
-        cumulative_return,
+        cumulative_returns_yearly,
         label="Portfolio Cumulative Return",
         color="blue",
     )

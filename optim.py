@@ -5,12 +5,10 @@ from scipy.optimize import minimize
 import statsmodels.api as sm
 
 
-@st.cache_data
 def portfolio_variance(weights, covariance_matrix):
     return weights.T @ covariance_matrix @ weights
 
 
-@st.cache_data
 def optimal_portfolio_markowitz(cov_matrix: np.ndarray) -> np.ndarray:
     n_assets = len(cov_matrix)
     initial_weights = np.ones(n_assets) / n_assets
@@ -32,7 +30,6 @@ def optimal_portfolio_markowitz(cov_matrix: np.ndarray) -> np.ndarray:
     return result.x
 
 
-@st.cache_data
 def perform_regression_analysis(aligned_data, weekly_returns):
     X = aligned_data["Sentiment"].values.reshape(-1, 1)
     X = sm.add_constant(X)

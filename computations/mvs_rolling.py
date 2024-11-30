@@ -2,11 +2,13 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 import streamlit as st
+from tqdm import tqdm
 
 from optim import portfolio_variance
 
 
 def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
+    print("Launched")
     data_handler = st.session_state["data_handler"]
 
     commodities_data_df_return = data_handler.get_commodities_returns()
@@ -14,12 +16,13 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
 
     final_combined_weights = st.session_state["final_combined_weights"]
 
-    rolling_window = 20  # Taille de la fenêtre mobile
+    rolling_window = 20
     initial_weights = final_combined_weights[:-1]
 
     optimal_weights_list = []
 
-    for i in range(rolling_window, len(commodities_data_df_return)):
+    print("rolling window 1")
+    for i in tqdm(range(rolling_window, len(commodities_data_df_return))):
         # Get the rolling returns window
         window_returns = commodities_data_df_return.iloc[i - rolling_window : i]
 
@@ -53,6 +56,7 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
 
         # Update initial_weights for the next iteration
         initial_weights = optimal_weights
+    print("Done")
 
     # Convert list to DataFrame for easier handling
     optimal_weights_df = pd.DataFrame(
@@ -64,7 +68,8 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
     portfolio_with_risk_free = []
 
     # Loop through the existing optimal weights DataFrame
-    for optimal_weights_tuple in optimal_weights_df.itertuples(index=False):
+    print("itertuples")
+    for optimal_weights_tuple in tqdm(optimal_weights_df.itertuples(index=False)):
         optimal_weights = np.array(optimal_weights_tuple)
 
         # Calculate portfolio return and variance using the optimal weights
@@ -91,6 +96,7 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
         portfolio_with_risk_free.append(
             np.append(combined_portfolio_weights, risk_free_weight)
         )
+    print("done")
 
     # Create a new DataFrame for the portfolio with risk-free weights
     columns = list(optimal_weights_df.columns) + ["Risk-Free Asset"]
@@ -112,7 +118,7 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
     ) + risk_free_weight.values * risk_free_returns
 
     # Calculate cumulative return
-    cumulative_return = (1 + portfolio_daily_returns).cumprod()
+    cumulative_returns_yearly = (1 + portfolio_daily_returns).cumprod()
 
     # Create a DataFrame for daily returns with dates
     portfolio_daily_returns_df = pd.DataFrame(
@@ -124,11 +130,14 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
     portfolio_daily_returns_df["Year"] = portfolio_daily_returns_df["Date"].dt.year
 
     # Group by year and calculate annualized return per year
-    annualized_returns_per_year = portfolio_daily_returns_df.groupby("Year").apply(
+    annualized_returns_yearly = portfolio_daily_returns_df.groupby("Year").apply(
         lambda x: (1 + x["Daily Return"].mean()) ** 252 - 1
     )
-    st.session_state["annualized_returns_per_year"] = annualized_returns_per_year
-    st.session_state["cumulative_return"] = cumulative_return
-    st.session_state["portfolio_with_risk_free_df"] = portfolio_with_risk_free_df
+    
+    print("ready to return")
 
-    return portfolio_with_risk_free_df, cumulative_return, annualized_returns_per_year
+    return (
+        portfolio_with_risk_free_df,
+        cumulative_returns_yearly,
+        annualized_returns_yearly,
+    )

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from scipy.optimize import minimize
-
+from tqdm import tqdm
 from optim import perform_regression_analysis
 
 
@@ -76,7 +76,7 @@ def compute_black_litterman_portfolio(risk_free_rate, risk_aversion):
 
     mu_bar_df = pd.DataFrame(index=Q.index, columns=weekly_returns.columns)
 
-    for date in Q.index:
+    for date in tqdm(Q.index):
         Q_week = Q.loc[date].values
         implied_mu_week = implied_mu_df.loc["Implied Mu"].values
         gamma = gamma_matrix(tau, covariance_matrix)
@@ -92,7 +92,7 @@ def compute_black_litterman_portfolio(risk_free_rate, risk_aversion):
     bounds = [(0, 1) for _ in range(num_assets)]
     optimized_weights_dict = {}
 
-    for i, (date, mu_bar) in enumerate(mu_bar_df.iterrows()):
+    for i, (date, mu_bar) in tqdm(enumerate(mu_bar_df.iterrows())):
         if i < rolling_window_size - 1:
             continue
 
@@ -124,7 +124,7 @@ def compute_black_litterman_portfolio(risk_free_rate, risk_aversion):
 
     portfolio_with_risk_free = []
 
-    for optimal_weights_tuple in optimized_weights_df.itertuples(index=False):
+    for optimal_weights_tuple in tqdm(optimized_weights_df.itertuples(index=False)):
         optimal_weights = np.array(optimal_weights_tuple)
         portfolio_return = np.dot(optimal_weights, expected_returns)
         portfolio_variance_value_bl = np.dot(
@@ -197,8 +197,5 @@ def compute_black_litterman_portfolio(risk_free_rate, risk_aversion):
     annualized_returns_df = pd.DataFrame.from_dict(
         annualized_returns_by_year, orient="index", columns=["Annualized Return"]
     )
-
-    st.session_state["cumulative_returns"] = cumulative_returns
-    st.session_state["annualized_returns_df"] = annualized_returns_df
 
     return portfolio_with_risk_free_df_bl, cumulative_returns, annualized_returns_df

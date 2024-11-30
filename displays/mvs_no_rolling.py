@@ -4,46 +4,75 @@ from computations.mvs_no_rolling import compute_minimum_variance_strategy
 
 
 def display_minimum_variance_strategy():
-    current_results = st.session_state["current_results"]
-
     st.header("Optimal Portfolio Weights with Adjustable Risk-Free Rate")
-
     st.info(
         "Use the sliders below to adjust the risk-free rate and risk aversion, and observe how the portfolio weights and metrics update dynamically."
     )
 
-    # Interactive parameters
-    if st.session_state["last_page"] != "mvs_no_rolling":
-        slider_risk_free_value = current_results.get_result(
-            "mvs_nor_last_risk_free_rate", 0.04
-        )
-        slider_risk_aversion_value = current_results.get_result(
-            "mvs_nor_last_risk_aversion", 3.0
-        )
-        st.session_state["last_page"] = "mvs_no_rolling"
-    else:
-        slider_risk_free_value = 0.04
-        slider_risk_aversion_value = 3.0
+    slider_risk_free_value = st.session_state.get(
+        "mvs_no_rolling_risk_free_rate", 0.04
+    )
+    slider_risk_aversion_value = st.session_state.get(
+        "mvs_no_rolling_risk_aversion", 3.0
+    )
 
     risk_free_rate = st.slider(
-        "Adjust Risk-Free Rate", 0.0, 0.09, slider_risk_free_value, 0.01
+        "Adjust Risk-Free Rate",
+        0.0,
+        0.09,
+        slider_risk_free_value,
+        0.01,
     )
     risk_aversion = st.slider(
-        "Select Risk Aversion", 1.00, 5.0, slider_risk_aversion_value, 1.0
+        "Select Risk Aversion",
+        1.00,
+        5.0,
+        slider_risk_aversion_value,
+        1.0,
     )
 
-    st.session_state["risk_free_rate"] = risk_free_rate
-    st.session_state["risk_aversion"] = risk_aversion
+    if st.button("Confirm and Compute"):
+        # Update session state with slider values
+        st.session_state["mvs_no_rolling_risk_free_rate"] = risk_free_rate
+        st.session_state["mvs_no_rolling_risk_aversion"] = risk_aversion
 
-    (
-        final_combined_weights,
-        asset_names_with_rf,
-        w_risky,
-        risk_free_weight,
-        combined_portfolio_return,
-        combined_portfolio_volatility,
-        weights_df,
-    ) = compute_minimum_variance_strategy(risk_free_rate, risk_aversion)
+        with st.spinner("Computing rolling window performance..."):
+            # Perform computation
+            (
+                final_combined_weights,
+                asset_names_with_rf,
+                w_risky,
+                risk_free_weight,
+                combined_portfolio_return,
+                combined_portfolio_volatility,
+                weights_df,
+            ) = compute_minimum_variance_strategy(risk_free_rate, risk_aversion)
+
+            # Store the results in session state
+            st.session_state["final_combined_weights"] = final_combined_weights
+            st.session_state["asset_names_with_rf"] = asset_names_with_rf
+            st.session_state["w_risky"] = w_risky
+            st.session_state["risk_free_weight"] = risk_free_weight
+            st.session_state["combined_portfolio_return"] = combined_portfolio_return
+            st.session_state["combined_portfolio_volatility"] = (
+                combined_portfolio_volatility
+            )
+            st.session_state["weights_df"] = weights_df
+        st.success("Computation completed!")
+
+    if "final_combined_weights" not in st.session_state:
+        st.warning(
+            "Please confirm the slider values to compute the portfolio performance."
+        )
+        return
+
+    final_combined_weights = st.session_state["final_combined_weights"]
+    asset_names_with_rf = st.session_state["asset_names_with_rf"]
+    w_risky = st.session_state["w_risky"]
+    risk_free_weight = st.session_state["risk_free_weight"]
+    combined_portfolio_return = st.session_state["combined_portfolio_return"]
+    combined_portfolio_volatility = st.session_state["combined_portfolio_volatility"]
+    weights_df = st.session_state["weights_df"]
 
     # Define colors for the assets
     color_map = {
@@ -98,6 +127,3 @@ def display_minimum_variance_strategy():
     ax.axis("equal")  # Equal aspect ratio ensures the donut is circular
     ax.set_title("Portfolio Allocation", fontsize=16)
     st.pyplot(fig)
-
-    # Save final weights to session state for later use
-    st.session_state["final_combined_weights"] = final_combined_weights

@@ -7,30 +7,19 @@ from data_management import get_sp500_data
 
 
 def display_black_litterman_performance():
-    current_results = st.session_state["current_results"]
-
     st.header("Black-litterman portfolio with Rolling Window")
     st.info(
         "Analyze Black-litterman portfolio performance over time using a rolling window approach and compare it with the S&P 500."
     )
-    try:
-        st.session_state["final_combined_weights"]
-    except KeyError:
-        st.success(
+
+    if "final_combined_weights" not in st.session_state:
+        st.warning(
             "Make sure you have completed the 2 previous steps before analyzing the performance."
         )
+        return
 
-    if st.session_state["last_page"] != "bl_rolling":
-        slider_risk_free_value = current_results.get_result(
-            "bl_last_risk_free_rate", 0.04
-        )
-        slider_risk_aversion_value = current_results.get_result(
-            "bl_last_risk_averson", 3.0
-        )
-        st.session_state["last_page"] = "bl_rolling"
-    else:
-        slider_risk_free_value = 0.04
-        slider_risk_aversion_value = 3.0
+    slider_risk_free_value = st.session_state.get("bl_risk_free_rate", 0.04)
+    slider_risk_aversion_value = st.session_state.get("bl_risk_aversion", 3.0)
 
     risk_free_rate = st.slider(
         "Adjust Risk-Free Rate ", 0.0, 0.09, slider_risk_free_value, 0.01
@@ -38,15 +27,42 @@ def display_black_litterman_performance():
     risk_aversion = st.slider(
         "Select Risk Aversion ", 1.00, 5.0, slider_risk_aversion_value, 1.0
     )
-    st.session_state["risk_free_rate"] = risk_free_rate
-    st.session_state["risk_aversion"] = risk_aversion
 
-    with st.spinner("Computing rolling window performance..."):
-        (
-            portfolio_with_risk_free_df_bl,
-            cumulative_returns,
-            annualized_returns_df,
-        ) = compute_black_litterman_portfolio(risk_free_rate, risk_aversion)
+    if st.button("Confirm and Compute"):
+        # Update session state with slider values
+        st.session_state["bl_risk_free_rate"] = risk_free_rate
+        st.session_state["bl_risk_aversion"] = risk_aversion
+
+        with st.spinner("Computing rolling window performance..."):
+            # Perform computation
+            (
+                portfolio_with_risk_free_df_bl,
+                cumulative_returns,
+                annualized_returns_df,
+            ) = compute_black_litterman_portfolio(risk_free_rate, risk_aversion)
+
+            # Store the results in session state
+            st.session_state["portfolio_with_risk_free_df_bl"] = (
+                portfolio_with_risk_free_df_bl
+            )
+            st.session_state["cumulative_returns"] = cumulative_returns
+            st.session_state["annualized_returns_df"] = annualized_returns_df
+
+        st.success("Computation completed!")
+
+    if (
+        "portfolio_with_risk_free_df_bl" not in st.session_state
+        or "cumulative_returns" not in st.session_state
+        or "annualized_returns_df" not in st.session_state
+    ):
+        st.warning(
+            "Please confirm the slider values to compute the portfolio performance."
+        )
+        return
+
+    portfolio_with_risk_free_df_bl = st.session_state["portfolio_with_risk_free_df_bl"]
+    cumulative_returns = st.session_state["cumulative_returns"]
+    annualized_returns_df = st.session_state["annualized_returns_df"]
 
     sp500_data = get_sp500_data(
         portfolio_with_risk_free_df_bl.index[0],
@@ -222,4 +238,3 @@ def display_black_litterman_performance():
 
     # Display the plot in Streamlit
     st.pyplot(fig)
-    
