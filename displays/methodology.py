@@ -289,7 +289,7 @@ def display_methodology():
         - The implied returns represent the market's consensus expectations under equilibrium conditions. 
     """)
 
-    st.subheader("Step 2: Incorporate Investor Views ($Q$) and Confidence ($\Omega$)")
+    st.subheader("Step 2: Incorporate Investor Views and Confidence")
     st.write(r""" 
         **Investor Views ($Q$)**: 
 
