@@ -7,9 +7,9 @@ from tools.data_management import get_sp500_data
 
 
 def display_black_litterman_performance():
-    st.header("Black-litterman portfolio with Rolling Window")
+    st.header("Black-litterman Performance Analysis ")
     st.info(
-        "Analyze Black-litterman portfolio performance over time using a rolling window approach and compare it with the S&P 500."
+        "Analyze Black-litterman portfolio performance over time and compare it with the S&P 500."
     )
 
     if "final_combined_weights" not in st.session_state:

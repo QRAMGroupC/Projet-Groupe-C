@@ -38,8 +38,8 @@ def app():
             icons=[
                 "house",
                 "search",
-                "clipboard",
                 "graph-up",
+                "clipboard",
                 "tools",
                 "bar-chart",
                 "gear",
@@ -71,6 +71,15 @@ def app():
                     "color": "white",  # White text when selected
                 },
             },
+        )
+        # Adding the project credits at the bottom of the sidebar
+        st.markdown("---")
+        st.markdown(
+            """
+            **Project by:**  
+            Aurélien Bruttin, Alain Al Chahabi, Aurélien Challet
+            """,
+            unsafe_allow_html=True,
         )
 
     if choice == "Introduction":
