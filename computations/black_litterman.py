@@ -91,21 +91,22 @@ def compute_black_litterman_portfolio(risk_free_rate, risk_aversion):
     num_assets = mu_bar_df.shape[1]
     bounds = [(0, 1) for _ in range(num_assets)]
     optimized_weights_dict = {}
+    
+    mu_bar_values = mu_bar_df.values
+    mu_bar_dates = mu_bar_df.index
+    
+    annual_cov_matrix = covariance_matrix * 52
 
-    for i, (date, mu_bar) in tqdm(enumerate(mu_bar_df.iterrows())):
-        if i < rolling_window_size - 1:
-            continue
-
-        window_returns = weekly_returns.iloc[i - rolling_window_size + 1 : i + 1]
-        # annual_cov_matrix = window_returns.cov().values * 52
-        annual_cov_matrix = covariance_matrix * 52
+    for i in tqdm(range(len(mu_bar_df))):
+        mu_bar = mu_bar_values[i]
+        date = mu_bar_dates[i]
         implied_phi = risk_aversion
         gamma = compute_gamma(implied_phi)
         x0 = np.full(num_assets, 1 / num_assets)
         res = minimize(
             QP_cov,
             x0,
-            args=(annual_cov_matrix, mu_bar.values, gamma),
+            args=(annual_cov_matrix, mu_bar, gamma),
             method="SLSQP",
             bounds=bounds,
             constraints=constraints,
