@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from optim import optimal_portfolio_markowitz, portfolio_variance
+from tools.optim import optimal_portfolio_markowitz, portfolio_variance
 
 
 def compute_minimum_variance_strategy(risk_free_rate, risk_aversion):

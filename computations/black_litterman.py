@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 from scipy.optimize import minimize
 from tqdm import tqdm
-from optim import perform_regression_analysis
+from tools.optim import perform_regression_analysis
 
 
 def gamma_matrix(tau, covariance_matrix):

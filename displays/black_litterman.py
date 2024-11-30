@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from computations.black_litterman import compute_black_litterman_portfolio
-from data_management import get_sp500_data
+from tools.data_management import get_sp500_data
 
 
 def display_black_litterman_performance():

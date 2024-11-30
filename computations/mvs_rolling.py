@@ -4,7 +4,7 @@ from scipy.optimize import minimize
 import streamlit as st
 from tqdm import tqdm
 
-from optim import portfolio_variance
+from tools.optim import portfolio_variance
 
 
 def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):

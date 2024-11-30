@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 from computations.data_exploration import compute_exploration_data
-from data_management import initialize_session_state
+from tools.data_management import initialize_session_state
 from displays.aversion_questionnaire import display_aversion_questionnaire
 from displays.black_litterman import display_black_litterman_performance
 from displays.compare import display_comparison

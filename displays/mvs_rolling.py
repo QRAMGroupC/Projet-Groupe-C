@@ -7,7 +7,7 @@ from computations.mvs_rolling import (
     compute_performance_with_rolling_window,
 )
 
-from data_management import get_sp500_data
+from tools.data_management import get_sp500_data
 
 
 def display_rolling_window_performance():

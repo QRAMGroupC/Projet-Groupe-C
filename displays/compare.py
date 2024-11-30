@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from data_management import get_sp500_data
+from tools.data_management import get_sp500_data
 
 
 def display_comparison():
