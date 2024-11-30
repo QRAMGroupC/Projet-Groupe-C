@@ -8,7 +8,6 @@ from tools.optim import portfolio_variance
 
 
 def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
-    print("Launched")
     data_handler = st.session_state["data_handler"]
 
     commodities_data_df_return = data_handler.get_commodities_returns()
@@ -20,8 +19,7 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
     initial_weights = final_combined_weights[:-1]
 
     optimal_weights_list = []
-
-    print("rolling window 1")
+    
     for i in tqdm(range(rolling_window, len(commodities_data_df_return))):
         # Get the rolling returns window
         window_returns = commodities_data_df_return.iloc[i - rolling_window : i]
@@ -56,7 +54,7 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
 
         # Update initial_weights for the next iteration
         initial_weights = optimal_weights
-    print("Done")
+    
 
     # Convert list to DataFrame for easier handling
     optimal_weights_df = pd.DataFrame(
@@ -68,7 +66,7 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
     portfolio_with_risk_free = []
 
     # Loop through the existing optimal weights DataFrame
-    print("itertuples")
+    
     for optimal_weights_tuple in tqdm(optimal_weights_df.itertuples(index=False)):
         optimal_weights = np.array(optimal_weights_tuple)
 
@@ -96,7 +94,7 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
         portfolio_with_risk_free.append(
             np.append(combined_portfolio_weights, risk_free_weight)
         )
-    print("done")
+    
 
     # Create a new DataFrame for the portfolio with risk-free weights
     columns = list(optimal_weights_df.columns) + ["Risk-Free Asset"]
@@ -134,7 +132,7 @@ def compute_performance_with_rolling_window(risk_free_rate, risk_aversion):
         lambda x: (1 + x["Daily Return"].mean()) ** 252 - 1
     )
     
-    print("ready to return")
+    
 
     return (
         portfolio_with_risk_free_df,
