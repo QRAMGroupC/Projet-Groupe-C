@@ -153,44 +153,35 @@ def display_methodology():
     """)
 
     data = {
-        "Commodity": ["Aluminium", "Copper", "Gas", "Gold", "Oil", "Sugar", "Wheat"],
-        "Coefficient": [0.0128, 0.0177, 0.0070, -0.0059, 0.0279, 0.0028, -0.000008],
-        "Intercept": [0.00088, 0.00073, 0.00153, 0.00204, 0.00024, 0.00122, 0.00121],
-        "R-squared": [0.00537, 0.00965, 0.00022, 0.00230, 0.00779, 0.00014, 0.0000009],
-        "P-value": [0.0957, 0.0253, 0.7134, 0.2758, 0.0447, 0.7893, 0.9995],
+        "Commodity": ["Gold", "Oil", "Gas", "Copper", "Aluminium", "Wheat", "Sugar"],
+        "Beta": [-0.005921, 0.027605, 0.006314, 0.017980, 0.013152, -0.000231, 0.002651],
+        "Alpha": [0.002043, 0.000256, 0.001561, 0.000718, 0.000868, 0.001213, 0.001227],
+        "R-squared": [0.002318368, 0.007559158, 0.000213108, 0.009999423, 0.005680256, 0.000000742, 0.0001206476],
+        "P-value": [0.274021, 0.047955, 0.740293, 0.022840, 0.086597, 0.984388, 0.803056],
     }
     regression_results = pd.DataFrame(data).set_index("Commodity")
-
-    def custom_format(value):
-        return f"{value:.8f}".rstrip("0").rstrip(".")
-
-    # Apply custom formatting only for Wheat
-    formatted_results = regression_results.copy()
-    formatted_results.loc["Wheat", :] = formatted_results.loc["Wheat", :].apply(
-        custom_format
-    )
-    st.dataframe(formatted_results)
+    st.dataframe(regression_results)
 
     st.subheader("Interpretation of Results")
-    st.write(r""" 
-        1. **Significance of Sentiment Coefficient ($\beta$)**: 
+    st.write(r"""
+        1. **Significance of Sentiment Coefficient ($\beta$)**:
 
-            - **Copper**: Shows a statistically significant positive relationship with sentiment ($p = 0.0253$), indicating that increased bullish sentiment is associated with higher returns. 
-            - **Oil**: Also exhibits a significant positive relationship ($p = 0.0447$). 
-            - **Aluminium**: Approaches significance at the 10% level ($p = 0.0957$). 
-            - **Other Commodities**: Gas, gold, sugar, and wheat do not show significant relationships, as indicated by their high p-values. 
+            - **Copper**: Shows a statistically significant positive relationship with sentiment ($p = 0.0228$), indicating that increased bullish sentiment is associated with higher returns.
+            - **Oil**: Also exhibits a significant positive relationship ($p = 0.0480$).
+            - **Aluminium**: Approaches significance at the 10% level ($p = 0.0866$).
+            - **Other Commodities**: Gold, gas, sugar, and wheat do not show significant relationships, as indicated by their high p-values.
 
-        2. **Direction of Impact**: 
+        2. **Direction of Impact**:
 
-            - **Positive Coefficients**: Most commodities have positive $\beta$ coefficients, suggesting that bullish sentiment tends to correlate with higher returns. 
-            - **Negative Coefficients**: Gold and wheat have slightly negative coefficients, implying a minor inverse relationship with sentiment, which may reflect their roles as safe-haven assets. 
+            - **Positive Coefficients**: Most commodities have positive $\beta$ coefficients, suggesting that bullish sentiment tends to correlate with higher returns.
+            - **Negative Coefficients**: Gold and wheat have slightly negative coefficients, implying a minor inverse relationship with sentiment, which may reflect their roles as safe-haven assets.
 
-        3. **Goodness of Fit ($R^2$)**: 
+        3. **Goodness of Fit ($R^2$)**:
 
-            - The $R^2$ values are low for all commodities, indicating that sentiment explains a small portion of the variance in returns. 
-            - This suggests that while sentiment has some impact, other factors play significant roles in determining commodity returns. 
+            - The $R^2$ values are low for all commodities, indicating that sentiment explains a small portion of the variance in returns.
+            - This suggests that while sentiment has some impact, other factors play significant roles in determining commodity returns.
 
-        Overall, the regression analysis reveals that investor sentiment, as measured by the AAII Sentiment Survey, has a statistically significant impact on certain commodities, particularly **copper** and **oil**. However, the low $R^2$ values highlight the complexity of commodity markets and the influence of additional factors such as supply and demand dynamics, geopolitical events, and macroeconomic indicators. 
+        Overall, the regression analysis reveals that investor sentiment has a statistically significant impact on certain commodities, particularly *copper* and *oil*. However, the low $R^2$ values highlight the complexity of commodity markets and the influence of additional factors such as supply and demand dynamics, geopolitical events, and macroeconomic indicators.
     """)
 
     st.subheader("Minimum Variance Portfolio Construction")

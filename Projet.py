@@ -37,13 +37,13 @@ def app():
             ],  # Options list
             icons=[
                 "house",
+                "search",
+                "clipboard",
+                "graph-up",
+                "tools",
                 "bar-chart",
-                "graph-up",
-                "book",
+                "gear",
                 "calculator",
-                "search",
-                "search",
-                "graph-up",
                 "book",
             ],
             # Icons for each option
