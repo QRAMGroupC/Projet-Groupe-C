@@ -5,7 +5,7 @@ from tools.data_management import get_sp500_data
 
 
 def display_comparison():
-    st.title("Comparaison betweem Min Var and Black-litterman strategy")
+    st.title("Comparison between Min Var and Black-litterman strategy")
     try:
         annualized_returns_yearly = st.session_state["annualized_returns_yearly"]
         annualized_returns_df = st.session_state["annualized_returns_df"]
