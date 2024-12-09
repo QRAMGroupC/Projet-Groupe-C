@@ -336,7 +336,7 @@ def display_methodology():
 
     st.subheader("Step 4: Optimize the Portfolio")
     st.write(r""" 
-        With the revised expected returns ($\bar{\mu}$) and the covariance matrix ($\Sigma$), we performed a **mean-variance optimization**: 
+        With the revised expected returns ($\bar{\mu}$) and the covariance matrix ($\Sigma$), we performed a **minimum variance optimization**: 
     """)
     st.latex(
         r"\max_{\mathbf{w}} \ \mathbf{w}^T \bar{\mu} - \frac{\gamma}{2} \mathbf{w}^T \Sigma \mathbf{w}"

@@ -70,7 +70,7 @@ def display_data_exploration():
     # Correlation Matrix
     st.subheader("Correlation Matrix")
     st.write(""" 
-    The correlation matrix shows the relationships between commodities, revealing how their prices move  
+    The correlation matrix shows the relationships between commodities, revealing how their returns move  
     relative to each other. A value closer to 1 indicates strong positive correlation, while a value closer  
     to -1 suggests a strong negative correlation. Diversification is key when managing correlated assets. 
     """)

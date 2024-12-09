@@ -34,7 +34,7 @@ def display_comparison():
 
     fig1, ax1 = plt.subplots(figsize=(12, 6))
     annualized_returns_yearly.plot(
-        kind="bar", ax=ax1, color="green", alpha=0.7, label="Portfolio"
+        kind="bar", ax=ax1, color="blue", alpha=0.7, label="Portfolio"
     )
     ax1.set_title("Annualized Returns by Year of Min Var")
     ax1.set_xlabel("Year")
@@ -45,7 +45,7 @@ def display_comparison():
 
     fig2, ax2 = plt.subplots(figsize=(12, 6))
     annualized_returns_df.plot(
-        kind="bar", ax=ax2, color="blue", alpha=0.7, label="Portfolio"
+        kind="bar", ax=ax2, color="green", alpha=0.7, label="Portfolio"
     )
     ax2.set_title("Annualized Returns by Year of Black-Litterman")
     ax2.set_xlabel("Year")

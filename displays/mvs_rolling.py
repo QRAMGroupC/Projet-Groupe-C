@@ -225,7 +225,7 @@ def display_rolling_window_performance():
     st.subheader("3. Annualized Portfolio Returns by Year")
     fig2, ax2 = plt.subplots(figsize=(12, 6))
     annualized_returns_yearly.plot(
-        kind="bar", ax=ax2, color="green", alpha=0.7, label="Portfolio"
+        kind="bar", ax=ax2, color="blue", alpha=0.7, label="Portfolio"
     )
     ax2.set_title("Annualized Returns by Year")
     ax2.set_xlabel("Year")
